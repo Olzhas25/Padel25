@@ -7,13 +7,13 @@
 <title>Падел — круговой турнир</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: sticky round switcher over a single column of court cards; standings tab ranks pairs */
+/* Layout: setup screen (format + names + pairs), then sticky round switcher over court cards; results tab ranks pairs or players */
 :root{
   --bg:#eef3f1; --surface:#ffffff; --line:#d3dfda; --fg:#10221d; --muted:#5b6f69;
   --court:#1f6b8f; --court-ink:#ffffff; --ball:#d7e84a; --ball-ink:#1d2600;
-  --win:#1b7f4e; --warn:#b26a00; --bad:#b3261e;
+  --win:#1b7f4e; --bad:#b3261e;
   --f-display:"Unbounded",system-ui,sans-serif;
   --f-body:"Manrope",system-ui,sans-serif;
   --f-num:"JetBrains Mono",ui-monospace,monospace;
@@ -21,29 +21,30 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0c1715; --surface:#13221f; --line:#24392f; --fg:#e4efeb; --muted:#8fa69f;
   --court:#2b84ad; --court-ink:#ffffff; --ball:#d7e84a; --ball-ink:#1d2600;
-  --win:#4fc58a; --warn:#f0a73a; --bad:#ff7a70; color-scheme:dark}}
+  --win:#4fc58a; --bad:#ff7a70; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0c1715; --surface:#13221f; --line:#24392f; --fg:#e4efeb; --muted:#8fa69f;
   --court:#2b84ad; --court-ink:#ffffff; --ball:#d7e84a; --ball-ink:#1d2600;
-  --win:#4fc58a; --warn:#f0a73a; --bad:#ff7a70; color-scheme:dark}
+  --win:#4fc58a; --bad:#ff7a70; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.4}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--court)}
 .wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
-header.top{background:var(--court);color:var(--court-ink);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0;padding:18px max(16px,env(safe-area-inset-left,0px)) 14px;position:relative;overflow:hidden}
+header.top{background:var(--court);color:var(--court-ink);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:18px max(16px,env(safe-area-inset-left,0px)) 14px;position:relative;overflow:hidden}
 header.top::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:var(--ball);opacity:.9;box-shadow:inset -14px -10px 0 rgba(0,0,0,.08)}
 h1{font-family:var(--f-display);font-weight:700;font-size:22px;margin:0;letter-spacing:.01em;text-wrap:balance;position:relative;z-index:1}
-.sub{opacity:.85;font-size:13px;margin-top:4px;position:relative;z-index:1}
+.sub{opacity:.85;font-size:13px;margin-top:4px;position:relative;z-index:1;padding-right:70px}
 .prog{margin-top:12px;height:6px;border-radius:3px;background:rgba(255,255,255,.25);position:relative;z-index:1}
 .prog i{display:block;height:100%;border-radius:3px;background:var(--ball);width:0;transition:width .3s}
 nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;padding:10px 0;overflow-x:auto;scrollbar-width:none}
+nav.tabs:empty{display:none}
 nav.tabs::-webkit-scrollbar{display:none}
 nav.tabs button{flex:1 0 auto;font:600 14px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center}
 nav.tabs button .dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
 nav.tabs button .dot.done{background:var(--win)}
 nav.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-nav.tabs button:focus-visible,.step:focus-visible,input:focus-visible,.btn:focus-visible{outline:2px solid var(--court);outline-offset:2px}
-.sec-h{font-family:var(--f-display);font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:8px 0 10px}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--court);outline-offset:2px}
+.sec-h{font-family:var(--f-display);font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 10px}
 .cards{display:grid;gap:12px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .card-h{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px dashed var(--line);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
@@ -60,13 +61,37 @@ nav.tabs button:focus-visible,.step:focus-visible,input:focus-visible,.btn:focus
 .step:active{transform:scale(.95)}
 .val{width:40px;text-align:center;font:700 26px var(--f-num);font-variant-numeric:tabular-nums}
 .val.empty{color:var(--line)}
-.tb{padding:10px 14px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:13px;color:var(--muted)}
-.tb label{display:flex;align-items:center;gap:6px}
-.tb input{width:52px;height:34px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:700 16px var(--f-num);text-align:center}
 .msg{padding:0 14px 10px;font-size:13px;color:var(--bad)}
 .msg:empty{display:none}
 .foot{display:flex;justify-content:flex-end;padding:0 14px 10px}
 .link{background:none;border:0;color:var(--muted);font:600 12px var(--f-body);text-decoration:underline;cursor:pointer;padding:4px}
+/* setup */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:14px}
+.field{display:grid;gap:8px}
+.field-l{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 0;min-width:0;font:700 15px var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:10px 8px;cursor:pointer;min-height:46px;line-height:1.2}
+.seg.wrap3 button{flex:1 1 140px}
+.seg button small{display:block;font-weight:600;font-size:12px;opacity:.75;margin-top:2px}
+.seg button[aria-pressed="true"]{background:var(--court);color:var(--court-ink);border-color:var(--court)}
+.names{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.names label{display:grid;grid-template-columns:20px minmax(0,1fr);align-items:center;gap:6px;font:700 12px var(--f-num);color:var(--muted)}
+.names input{width:100%;min-width:0;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:600 16px var(--f-body);padding:0 10px}
+.err{color:var(--bad);font-size:13px;font-weight:600}
+.err:empty{display:none}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.btn{font:600 14px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:10px 14px;cursor:pointer}
+.btn.main{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.big{width:100%;padding:14px;font-size:16px;font-weight:700}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
+.btn.wa{background:var(--win);border-color:var(--win);color:#fff}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns .btn{flex:1 1 auto}
+.pairs{display:grid;gap:8px}
+.pair{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
+.pair .lbl{font:700 13px var(--f-num);color:var(--muted)}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:10px 8px;font:700 15px var(--f-body);cursor:pointer;min-width:0;overflow-wrap:anywhere;min-height:44px}
+.chip[aria-pressed="true"]{border-color:var(--court);background:color-mix(in srgb,var(--court) 16%,var(--bg));box-shadow:0 0 0 1px var(--court)}
 /* standings */
 .podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px;align-items:end}
 .pod{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;min-width:0}
@@ -86,24 +111,17 @@ td.pl{font:700 16px var(--f-display)}
 td.pts{font-weight:700;color:var(--court)}
 .plus{color:var(--win)} .minus{color:var(--bad)}
 .note{font-size:12px;color:var(--muted);margin-top:10px}
-.matrix{margin-top:18px}
-.matrix td{font-size:13px}
-.matrix td.self{background:color-mix(in srgb,var(--muted) 10%,transparent)}
-.matrix td.w{color:var(--win);font-weight:700}
-.matrix td.l{color:var(--bad)}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
-.btn{font:600 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:9px 12px;cursor:pointer}
-.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
-.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
-.rules{font-size:13px;color:var(--muted);margin-top:16px;line-height:1.55}
+.mx td{font-size:13px}
+.mx td.self{background:color-mix(in srgb,var(--muted) 10%,transparent)}
+.mx td.w{color:var(--win);font-weight:700}
+.mx td.l{color:var(--bad)}
 .share{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:10px}
 .share-h{font-weight:700}
 .share p{margin:0;font-size:13px;color:var(--muted)}
-.share-btns{display:flex;gap:8px;flex-wrap:wrap}
-.btn.wa{background:var(--win);border-color:var(--win);color:#fff;text-decoration:none;display:inline-flex;align-items:center}
-.btn.main{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.share textarea{width:100%;min-height:64px;font:12px var(--f-num);border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);padding:8px;resize:vertical}
 .share img{width:100%;display:block;border-radius:10px;border:1px solid var(--line);background:var(--bg);min-height:160px}
+.share textarea{width:100%;min-height:64px;font:12px var(--f-num);border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);padding:8px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px;align-items:center;font-size:13px}
+.rules{font-size:13px;color:var(--muted);margin-top:16px;line-height:1.55}
 .toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:20;max-width:calc(100% - 32px);text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -112,181 +130,219 @@ td.pts{font-weight:700;color:var(--court)}
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>Падел · 6 пар</h1>
-    <div class="sub" id="sub">15 матчей · сет до 5 геймов · стар-поинт</div>
-    <div class="prog"><i id="progbar"></i></div>
+    <h1>Падел</h1>
+    <div class="sub" id="sub"></div>
+    <div class="prog" id="prog"><i id="progbar"></i></div>
   </header>
   <nav class="tabs" id="tabs" role="tablist"></nav>
   <main id="view"></main>
 </div>
 
 <script>
-const PAIRS=["Нурбек/Ильяс","Нурлан/Алибек","Стас/Рус","Еркежан/Али","Алишер/Султан","Олжас/Виталий"];
-const P=n=>PAIRS.indexOf(n);
-const ROUNDS=[
- [["Нурбек/Ильяс","Олжас/Виталий"],["Еркежан/Али","Алишер/Султан"],["Нурлан/Алибек","Стас/Рус"]],
- [["Нурбек/Ильяс","Еркежан/Али"],["Нурлан/Алибек","Олжас/Виталий"],["Стас/Рус","Алишер/Султан"]],
- [["Нурбек/Ильяс","Нурлан/Алибек"],["Стас/Рус","Еркежан/Али"],["Алишер/Султан","Олжас/Виталий"]],
- [["Нурбек/Ильяс","Алишер/Султан"],["Олжас/Виталий","Стас/Рус"],["Еркежан/Али","Нурлан/Алибек"]],
- [["Нурбек/Ильяс","Стас/Рус"],["Алишер/Султан","Нурлан/Алибек"],["Олжас/Виталий","Еркежан/Али"]]
-];
-const MATCHES=[];ROUNDS.forEach((r,ri)=>r.forEach((m,ci)=>MATCHES.push({id:ri+"-"+ci,round:ri,court:ci+1,a:P(m[0]),b:P(m[1])})));
-
-const KEY="padel-rr-2026-10-17-v3";
-let S={scores:{},tab:0};
-try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.scores)S=s;}catch(e){}
+// 8 players: each pair of players are partners exactly once, opponents exactly twice
+const WHIST=[[[[0,1],[2,3]],[[4,5],[6,7]]],[[[0,2],[4,6]],[[1,3],[5,7]]],[[[0,3],[4,7]],[[1,2],[5,6]]],[[[0,4],[1,5]],[[2,6],[3,7]]],[[[0,5],[2,7]],[[1,4],[3,6]]],[[[0,6],[3,5]],[[1,7],[2,4]]],[[[0,7],[1,6]],[[2,5],[3,4]]]];
+const KEY="padel-v4";
+const DEF=()=>({stage:"setup",n:12,g:5,r:"dec",names:Array(12).fill(""),pairs:[],scores:{},tab:0});
+let S=DEF(),SEL=null,M=[];
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&Array.isArray(s.names)&&s.names.length===12)S=Object.assign(DEF(),s)}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function sc(id){return S.scores[id]||(S.scores[id]={a:null,b:null,ta:"",tb:""})}
 
-// result of a match: {state:'empty'|'partial'|'bad'|'done', winner:'a'|'b', msg}
+const $=s=>document.querySelector(s);
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+const nm=i=>(S.names[i]||"").trim()||`Игрок ${i+1}`;
+const teamName=t=>S.pairs[t].map(nm).join("/");
+const ROUNDS=()=>S.n===12?5:7;
+const PER=()=>S.n===12?3:2;
+const MAXG=()=>S.r==="adv"?S.g+1:S.g;
+
+function rr6(){const R=[];let a=[0,1,2,3,4,5];
+  for(let r=0;r<5;r++){const m=[];for(let i=0;i<3;i++)m.push([a[i],a[5-i]]);R.push(m);a=[a[0],a[5],...a.slice(1,5)]}
+  return R}
+function buildMatches(){
+  const out=[];
+  if(S.n===12){rr6().forEach((rd,ri)=>rd.forEach((m,ci)=>out.push({id:ri+"-"+ci,round:ri,court:ci+1,ta:m[0],tb:m[1],a:S.pairs[m[0]],b:S.pairs[m[1]]})))}
+  else WHIST.forEach((rd,ri)=>rd.forEach((m,ci)=>out.push({id:ri+"-"+ci,round:ri,court:ci+1,a:m[0],b:m[1]})));
+  return out}
+const sideName=(m,side)=>S.n===12?teamName(side==="a"?m.ta:m.tb):m[side].map(nm).join(" / ");
+
+function ruleShort(){const N=S.g;return S.r==="dec"?`решающий гейм при ${N-1}:${N-1}`:S.r==="tb"?`тай-брейк при ${N-1}:${N-1}`:`до разницы в 2, тай-брейк при ${N}:${N}`}
+function ruleText(){const N=S.g;
+  if(S.r==="dec")return`Сет до ${N} геймов. При ${N-1}:${N-1} играется решающий гейм, итог ${N}:${N-1}.`;
+  if(S.r==="tb")return`Сет до ${N} геймов. При ${N-1}:${N-1} играется тай-брейк, в счёт идёт ${N}:${N-1}.`;
+  return`Сет до ${N} геймов с разницей в 2. При ${N}:${N} играется тай-брейк, в счёт идёт ${N+1}:${N}.`}
+function validList(){const N=S.g;return S.r==="adv"?`${N}:0 … ${N}:${N-2}, ${N+1}:${N-1}, ${N+1}:${N}`:`${N}:0 … ${N}:${N-1}`}
+
 function evalMatch(id){
   const s=S.scores[id];
   if(!s||(s.a===null&&s.b===null))return{state:"empty"};
   if(s.a===null||s.b===null)return{state:"partial"};
-  const a=s.a,b=s.b,hi=Math.max(a,b),lo=Math.min(a,b);
-  const okSet=hi===5&&lo<=4;
-  if(!okSet){
-    if(hi<5)return{state:"partial"};
-    return{state:"bad",msg:"Такого счёта не бывает. Возможные: 5:0, 5:1, 5:2, 5:3, 5:4."};
-  }
-  const r={state:"done",winner:a>b?"a":"b"};
-  if(hi===6&&lo===5){
-    const ta=s.ta===""?null:+s.ta, tb=s.tb===""?null:+s.tb;
-    if(ta!==null&&tb!==null){
-      const th=Math.max(ta,tb),tl=Math.min(ta,tb);
-      const okTb=(th===7&&tl<=5)||(th>7&&th-tl===2);
-      if(!okTb)return{state:"bad",msg:"Тай-брейк до 7 очков с разницей в 2 (7:5, 8:6, 10:8…)."};
-      if((ta>tb?"a":"b")!==r.winner)return{state:"bad",msg:"Тай-брейк выиграла не та пара, у которой 6 геймов."};
-      r.tb=[ta,tb];
-    }
-  }
-  return r;
-}
+  const N=S.g,hi=Math.max(s.a,s.b),lo=Math.min(s.a,s.b);
+  if(hi<N)return{state:"partial"};
+  let ok=false;
+  if(S.r==="adv"){if(hi===N&&lo>=N-1)return{state:"partial"};ok=(hi===N&&lo<=N-2)||(hi===N+1&&(lo===N-1||lo===N))}
+  else ok=hi===N&&lo<=N-1;
+  if(!ok)return{state:"bad",msg:`Такой счёт не подходит. Возможные: ${validList()}.`};
+  return{state:"done",winner:s.a>s.b?"a":"b"}}
+const doneCount=()=>M.filter(m=>evalMatch(m.id).state==="done").length;
 
 function standings(){
-  const T=PAIRS.map((n,i)=>({i,n,p:0,w:0,l:0,gw:0,gl:0}));
+  const tw=S.n===12;
+  const E=(tw?S.pairs.map((_,t)=>({i:t,n:teamName(t)})):Array.from({length:8},(_,i)=>({i,n:nm(i)}))).map(e=>Object.assign(e,{p:0,w:0,l:0,gw:0,gl:0}));
   const h2h={};
-  MATCHES.forEach(m=>{
-    const r=evalMatch(m.id);if(r.state!=="done")return;
-    const s=S.scores[m.id],A=T[m.a],B=T[m.b];
-    A.p++;B.p++;A.gw+=s.a;A.gl+=s.b;B.gw+=s.b;B.gl+=s.a;
-    if(r.winner==="a"){A.w++;B.l++;h2h[m.a+">"+m.b]=1}else{B.w++;A.l++;h2h[m.b+">"+m.a]=1}
-  });
-  T.forEach(t=>t.gd=t.gw-t.gl);
-  T.sort((x,y)=>y.w-x.w||y.gd-x.gd||y.gw-x.gw||(h2h[y.i+">"+x.i]?1:h2h[x.i+">"+y.i]?-1:0)||x.i-y.i);
-  // shared places when fully tied
-  T.forEach((t,k)=>{const prev=T[k-1];
-    t.place=(prev&&prev.w===t.w&&prev.gd===t.gd&&prev.gw===t.gw&&!h2h[prev.i+">"+t.i]&&!h2h[t.i+">"+prev.i])?prev.place:k+1});
-  return T;
-}
+  M.forEach(m=>{const r=evalMatch(m.id);if(r.state!=="done")return;const s=S.scores[m.id];
+    const add=(ids,mine,their,won)=>ids.forEach(i=>{const e=E[i];e.p++;e.gw+=mine;e.gl+=their;won?e.w++:e.l++});
+    add(tw?[m.ta]:m.a,s.a,s.b,r.winner==="a");add(tw?[m.tb]:m.b,s.b,s.a,r.winner==="b");
+    if(tw){const w=r.winner==="a"?m.ta:m.tb,l=r.winner==="a"?m.tb:m.ta;h2h[w+">"+l]=1}});
+  E.forEach(e=>e.gd=e.gw-e.gl);
+  const hh=(x,y)=>h2h[y.i+">"+x.i]?1:h2h[x.i+">"+y.i]?-1:0;
+  const T=E.slice().sort((x,y)=>y.w-x.w||y.gd-x.gd||y.gw-x.gw||hh(x,y)||x.i-y.i);
+  T.forEach((t,k)=>{const p=T[k-1];t.place=(p&&p.w===t.w&&p.gd===t.gd&&p.gw===t.gw&&!hh(p,t))?p.place:k+1});
+  return T}
 
-const $=s=>document.querySelector(s);
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+/* ---------- setup ---------- */
+function seg(name,opts,cur,cls=""){return`<div class="seg ${cls}" role="group">${opts.map(([v,l,sm])=>`<button type="button" data-act="set" data-k="${name}" data-v="${v}" aria-pressed="${String(cur)===String(v)}">${l}${sm?`<small>${sm}</small>`:""}</button>`).join("")}</div>`}
+function renderSetup(){
+  const N=S.g;
+  const inputs=Array.from({length:S.n},(_,i)=>`<label for="nm${i}">${i+1}<input id="nm${i}" data-i="${i}" maxlength="18" autocomplete="off" autocapitalize="words" placeholder="Имя" value="${esc(S.names[i])}"></label>`).join("");
+  $("#view").innerHTML=`<div class="sec-h">Новый турнир</div>
+  <div class="panel">
+    <div class="field"><div class="field-l">Игроков</div>${seg("n",[[12,"12","6 фикс-пар"],[8,"8","каждый за себя"]],S.n)}</div>
+    <div class="field"><div class="field-l">Сет до</div>${seg("g",[[5,"5 геймов"],[6,"6 геймов"]],S.g)}</div>
+    <div class="field"><div class="field-l">При равном счёте</div>${seg("r",[["dec","Решающий гейм",`при ${N-1}:${N-1} → ${N}:${N-1}`],["tb","Тай-брейк",`при ${N-1}:${N-1} → ${N}:${N-1}`],["adv","Разница в 2",`тай-брейк при ${N}:${N}`]],S.r,"wrap3")}</div>
+    <p class="hint">${S.n===12?"Пары составит жеребьёвка. 5 туров по 3 корта, каждая пара сыграет с каждой.":"7 туров по 2 корта. Каждый сыграет с каждым один раз в паре и дважды против."}</p>
+  </div>
+  <div class="sec-h">Имена игроков</div>
+  <div class="panel"><div class="names">${inputs}</div>
+    <div class="err" id="err"></div>
+    <button class="btn main big" data-act="next">${S.n===12?"Жеребьёвка пар":"Начать турнир"}</button></div>`}
+function checkNames(){
+  const list=S.names.slice(0,S.n).map(x=>x.trim());
+  if(list.some(x=>!x))return"Впишите имена всех игроков.";
+  const low=list.map(x=>x.toLowerCase());
+  const dup=low.find((x,i)=>low.indexOf(x)!==i);
+  if(dup)return`Имя «${list[low.indexOf(dup)]}» повторяется. Добавьте букву фамилии, чтобы различать.`;
+  return""}
+function shufflePairs(){const a=[...Array(12).keys()];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}S.pairs=[0,1,2,3,4,5].map(k=>[a[2*k],a[2*k+1]])}
+function renderPairs(){
+  $("#view").innerHTML=`<div class="sec-h">Жеребьёвка пар</div>
+  <div class="panel">
+    <div class="pairs">${S.pairs.map((p,t)=>`<div class="pair"><span class="lbl">${t+1}</span>${p.map((pl,k)=>`<button class="chip" data-act="chip" data-t="${t}" data-k="${k}" aria-pressed="${!!SEL&&SEL.t===t&&SEL.k===k}">${esc(nm(pl))}</button>`).join("")}</div>`).join("")}</div>
+    <p class="hint">${SEL?"Теперь нажмите на игрока, с которым поменять.":"Чтобы поменять двух игроков местами, нажмите на одного, потом на другого."}</p>
+    <div class="btns"><button class="btn" data-act="reshuffle">Перемешать ещё раз</button><button class="btn" data-act="back">Изменить имена</button></div>
+    <button class="btn main big" data-act="start">Начать турнир</button>
+  </div>`}
+function startTournament(){S.stage="play";S.scores={};S.tab=0;SEL=null;M=buildMatches();save();render();window.scrollTo({top:0})}
 
-function roundDone(ri){return MATCHES.filter(m=>m.round===ri).every(m=>evalMatch(m.id).state==="done")}
-function renderTabs(){
-  const labels=ROUNDS.map((_,i)=>`<button role="tab" id="tab${i}" aria-selected="${S.tab===i}" data-tab="${i}"><span class="dot ${roundDone(i)?"done":""}"></span>Тур ${i+1}</button>`);
-  labels.push(`<button role="tab" id="tab5" aria-selected="${S.tab===5}" data-tab="5">Итоги</button>`);
-  $("#tabs").innerHTML=labels.join("");
-  const done=MATCHES.filter(m=>evalMatch(m.id).state==="done").length;
-  $("#progbar").style.width=(done/15*100)+"%";
-  $("#sub").textContent=`Сыграно ${done} из 15 · сет до 5 · стар-поинт`;
-}
-
+/* ---------- play ---------- */
+function roundDone(ri){return M.filter(m=>m.round===ri).every(m=>evalMatch(m.id).state==="done")}
+function renderHeader(){
+  const play=S.stage==="play";
+  $("#prog").hidden=!play;
+  if(!play){$("#sub").textContent=S.stage==="pairs"?"Шаг 2 из 2 · пары":"Шаг 1 из 2 · формат и игроки";$("#tabs").innerHTML="";return}
+  const d=doneCount();
+  $("#progbar").style.width=(d/M.length*100)+"%";
+  $("#sub").textContent=`Сыграно ${d} из ${M.length} · ${S.n===12?"6 пар":"8 игроков"} · до ${S.g}, ${ruleShort()}`;
+  const tabs=[];for(let i=0;i<ROUNDS();i++)tabs.push(`<button role="tab" aria-selected="${S.tab===i}" data-act="tab" data-tab="${i}"><span class="dot ${roundDone(i)?"done":""}"></span>Тур ${i+1}</button>`);
+  tabs.push(`<button role="tab" aria-selected="${S.tab==="res"}" data-act="tab" data-tab="res">Итоги</button>`);
+  $("#tabs").innerHTML=tabs.join("")}
 function badge(r){
   if(r.state==="done")return`<span class="badge ok">Завершён</span>`;
   if(r.state==="bad")return`<span class="badge bad">Проверьте счёт</span>`;
   if(r.state==="partial")return`<span class="badge pend">Идёт игра</span>`;
-  return`<span class="badge pend">Не начат</span>`;
-}
-
+  return`<span class="badge pend">Не начат</span>`}
 function cardHTML(m){
-  const s=S.scores[m.id]||{a:null,b:null,ta:"",tb:""},r=evalMatch(m.id);
-  const row=(side,idx)=>{const v=s[side];
-    return`<div class="row"><div class="team ${r.state==="done"&&r.winner===side?"w":""}">${esc(PAIRS[idx])}</div>
-    <div class="stepper"><button class="step" data-m="${m.id}" data-s="${side}" data-d="-1" aria-label="Минус гейм ${esc(PAIRS[idx])}">−</button>
+  const s=S.scores[m.id]||{a:null,b:null},r=evalMatch(m.id);
+  const row=side=>{const v=s[side],n=esc(sideName(m,side));
+    return`<div class="row"><div class="team ${r.state==="done"&&r.winner===side?"w":""}">${n}</div>
+    <div class="stepper"><button class="step" data-act="step" data-m="${m.id}" data-s="${side}" data-d="-1" aria-label="Минус гейм: ${n}">−</button>
     <div class="val ${v===null?"empty":""}">${v===null?"–":v}</div>
-    <button class="step" data-m="${m.id}" data-s="${side}" data-d="1" aria-label="Плюс гейм ${esc(PAIRS[idx])}">+</button></div></div>`};
-  const is76=s.a!==null&&s.b!==null&&Math.max(s.a,s.b)===6&&Math.min(s.a,s.b)===5;
-  const tb=is76?`<div class="tb"><span>Тай-брейк (необязательно):</span>
-     <label>${esc(PAIRS[m.a].split("/")[0])}… <input id="ta-${m.id}" inputmode="numeric" data-m="${m.id}" data-t="ta" value="${esc(s.ta)}"></label>
-     <label>${esc(PAIRS[m.b].split("/")[0])}… <input id="tb-${m.id}" inputmode="numeric" data-m="${m.id}" data-t="tb" value="${esc(s.tb)}"></label></div>`:"";
+    <button class="step" data-act="step" data-m="${m.id}" data-s="${side}" data-d="1" aria-label="Плюс гейм: ${n}">+</button></div></div>`};
   return`<div class="card" id="c-${m.id}"><div class="card-h"><span>Корт ${m.court}</span>${badge(r)}</div>
-    ${row("a",m.a)}${row("b",m.b)}${tb}<div class="msg">${r.state==="bad"?esc(r.msg):""}</div>
-    ${s.a!==null||s.b!==null?`<div class="foot"><button class="link" data-clear="${m.id}">Сбросить счёт</button></div>`:""}</div>`;
-}
-
+    ${row("a")}${row("b")}<div class="msg">${r.state==="bad"?esc(r.msg):""}</div>
+    ${s.a!==null||s.b!==null?`<div class="foot"><button class="link" data-act="clear" data-m="${m.id}">Сбросить счёт</button></div>`:""}</div>`}
 function renderRound(ri){
-  $("#view").innerHTML=`<div class="sec-h">Тур ${ri+1} · 3 корта одновременно</div><div class="cards">${MATCHES.filter(m=>m.round===ri).map(cardHTML).join("")}</div>
-  <p class="rules">Сет до 5 геймов. При 4:4 — решающий гейм, итог 5:4. В гейме при «ровно» один раз играется больше/меньше, при повторном «ровно» — стар-поинт (решающий розыгрыш).</p>`;
-}
+  $("#view").innerHTML=`<div class="sec-h">Тур ${ri+1} из ${ROUNDS()} · ${PER()} корта одновременно</div><div class="cards">${M.filter(m=>m.round===ri).map(cardHTML).join("")}</div>
+  <p class="rules">${ruleText()}</p>`}
+
+function cellFor(i,ri){ // 8-player: player i in round ri
+  const m=M.find(q=>q.round===ri&&(q.a.includes(i)||q.b.includes(i)));
+  const side=m.a.includes(i)?"a":"b",r=evalMatch(m.id);
+  if(r.state!=="done")return null;
+  const s=S.scores[m.id];return{mine:s[side],their:s[side==="a"?"b":"a"]}}
+function cellVs(i,j){ // 12: team i vs team j
+  const m=M.find(x=>(x.ta===i&&x.tb===j)||(x.ta===j&&x.tb===i)),r=evalMatch(m.id);
+  if(r.state!=="done")return null;
+  const s=S.scores[m.id];return{mine:m.ta===i?s.a:s.b,their:m.ta===i?s.b:s.a}}
 
 function renderStandings(){
-  const T=standings(),done=MATCHES.filter(m=>evalMatch(m.id).state==="done").length;
+  const tw=S.n===12,T=standings(),d=doneCount();
   const sign=v=>v>0?`<span class="plus">+${v}</span>`:v<0?`<span class="minus">${v}</span>`:"0";
   const top=T.slice(0,3),order=[1,0,2];
-  const pod=done?`<div class="podium">${order.map(k=>{const t=top[k];return`<div class="pod ${k===0?"first":""}"><div class="p">${t.place}</div><div class="n">${esc(t.n)}</div><div class="s">${t.w} поб · ${t.gd>0?"+":""}${t.gd}</div></div>`}).join("")}</div>`:"";
+  const pod=d?`<div class="podium">${order.map(k=>{const t=top[k];return`<div class="pod ${k===0?"first":""}"><div class="p">${t.place}</div><div class="n">${esc(t.n)}</div><div class="s">${t.w} поб · ${t.gd>0?"+":""}${t.gd}</div></div>`}).join("")}</div>`:"";
   const rows=T.map(t=>`<tr><td class="pl">${t.place}</td><td class="nm">${esc(t.n)}</td><td>${t.p}</td><td class="pts">${t.w}</td><td>${t.l}</td><td>${t.gw}–${t.gl}</td><td>${sign(t.gd)}</td></tr>`).join("");
-  // head-to-head matrix
-  const cell=(i,j)=>{if(i===j)return`<td class="self"></td>`;
-    const m=MATCHES.find(x=>(x.a===i&&x.b===j)||(x.a===j&&x.b===i)),r=evalMatch(m.id);
-    if(r.state!=="done")return`<td>·</td>`;const s=S.scores[m.id],mine=m.a===i?s.a:s.b,their=m.a===i?s.b:s.a;
-    return`<td class="${mine>their?"w":"l"}">${mine}:${their}</td>`};
-  const short=n=>n.split("/").map(x=>x.slice(0,3)).join("/");
-  const mx=`<div class="sec-h matrix">Шахматка</div><div class="tablewrap"><table><thead><tr><th></th>${PAIRS.map(n=>`<th>${esc(short(n))}</th>`).join("")}</tr></thead><tbody>${PAIRS.map((n,i)=>`<tr><td class="nm">${esc(n)}</td>${PAIRS.map((_,j)=>cell(i,j)).join("")}</tr>`).join("")}</tbody></table></div>`;
-  $("#view").innerHTML=`<div class="sec-h">${done===15?"Финальная таблица":`Таблица · сыграно ${done} из 15`}</div>${pod}
-  <div class="tablewrap"><table><thead><tr><th>#</th><th style="text-align:left">Пара</th><th>И</th><th>Поб</th><th>Пор</th><th>Геймы</th><th>±</th></tr></thead><tbody>${rows}</tbody></table></div>
-  <p class="note">Места: сначала победы, потом разница геймов, потом выигранные геймы, потом личная встреча.</p>${mx}
-  <div class="actions" id="actions"><button class="btn danger" id="resetAll">Сбросить весь турнир</button></div>`;
-}
+  const td=c=>c?`<td class="${c.mine>c.their?"w":"l"}">${c.mine}:${c.their}</td>`:`<td>·</td>`;
+  let grid;
+  if(tw){const short=t=>S.pairs[t].map(p=>nm(p).slice(0,3)).join("/");
+    grid=`<div class="sec-h">Шахматка</div><div class="tablewrap mx"><table><thead><tr><th></th>${S.pairs.map((_,t)=>`<th>${esc(short(t))}</th>`).join("")}</tr></thead><tbody>${S.pairs.map((_,i)=>`<tr><td class="nm">${esc(teamName(i))}</td>${S.pairs.map((_,j)=>i===j?`<td class="self"></td>`:td(cellVs(i,j))).join("")}</tr>`).join("")}</tbody></table></div>`}
+  else{grid=`<div class="sec-h">По турам</div><div class="tablewrap mx"><table><thead><tr><th></th>${Array.from({length:7},(_,r)=>`<th>Т${r+1}</th>`).join("")}</tr></thead><tbody>${Array.from({length:8},(_,i)=>`<tr><td class="nm">${esc(nm(i))}</td>${Array.from({length:7},(_,r)=>td(cellFor(i,r))).join("")}</tr>`).join("")}</tbody></table></div>`}
+  $("#view").innerHTML=`<div class="sec-h">${d===M.length?"Финальная таблица":`Таблица · сыграно ${d} из ${M.length}`}</div>${pod}
+  <div class="tablewrap"><table><thead><tr><th>#</th><th style="text-align:left">${tw?"Пара":"Игрок"}</th><th>И</th><th>Поб</th><th>Пор</th><th>Геймы</th><th>±</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="note">Места: победы → разница геймов → выигранные геймы${tw?" → личная встреча":""}.</p>${grid}
+  <div class="share"><div class="share-h">Картинка с итогами</div>
+    <img id="resImg" alt="Итоги: таблица и ${tw?"шахматка":"результаты по турам"}">
+    <div class="btns"><button class="btn wa" data-act="imgShare">Отправить картинку</button></div>
+    <p>Откроется меню «Поделиться», выберите WhatsApp. Если меню не открылось, нажмите на картинку и удерживайте, затем «Сохранить».</p></div>
+  <div class="share"><div class="share-h">Ссылка со счётом</div>
+    <p>У того, кто откроет ссылку, загрузится этот турнир со всеми именами и счётом.</p>
+    <div class="btns"><a class="btn wa" id="waLink" href="https://wa.me/?text=${encodeURIComponent(shareText())}" target="_blank" rel="noopener">Отправить в WhatsApp</a><button class="btn main" data-act="copy">Скопировать</button></div>
+    <textarea id="shareTxt" readonly aria-label="Текст для отправки">${esc(shareText())}</textarea></div>
+  <div class="actions" id="actions"><button class="btn danger" data-act="newAsk">Новый турнир</button></div>`;
+  buildImage()}
 
-// ---- share via link (score encoded in #s=...) ----
-function encode(){
-  return MATCHES.map(m=>{const s=S.scores[m.id];if(!s||s.a===null||s.b===null)return"";
-    const p=[s.a,s.b];if(s.ta!==""&&s.tb!=="")p.push(s.ta,s.tb);return p.join(".")}).join("_");
-}
-function shareURL(){return location.origin+location.pathname+"#s="+encode()}
+function render(){
+  if(S.stage==="play"&&!M.length)M=buildMatches();
+  renderHeader();
+  if(S.stage==="setup")renderSetup();
+  else if(S.stage==="pairs")renderPairs();
+  else if(S.tab==="res")renderStandings();
+  else renderRound(Math.min(+S.tab||0,ROUNDS()-1))}
+
+/* ---------- share link ---------- */
+function b64e(str){const b=new TextEncoder().encode(str);let s="";b.forEach(x=>s+=String.fromCharCode(x));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function b64d(t){t=t.replace(/-/g,"+").replace(/_/g,"/");const s=atob(t);return new TextDecoder().decode(Uint8Array.from(s,c=>c.charCodeAt(0)))}
+function payload(){return{n:S.n,g:S.g,r:S.r,nm:S.names.slice(0,S.n),pr:S.n===12?S.pairs:[],sc:M.map(m=>{const s=S.scores[m.id];return s&&s.a!==null&&s.b!==null?[s.a,s.b]:0})}}
+function shareURL(){return location.origin+location.pathname+"#t="+b64e(JSON.stringify(payload()))}
 function shareText(){
-  const done=MATCHES.filter(m=>evalMatch(m.id).state==="done").length;
-  let t=`🎾 Падел: сыграно ${done} из 15\n`;
-  if(done){const T=standings();t+=T.map(x=>`${x.place}. ${x.n} — ${x.w} поб, ${x.gd>0?"+":""}${x.gd}`).join("\n")+"\n";}
-  return t+`\nОткрой ссылку, счёт добавится к тебе:\n${shareURL()}`;
-}
+  const d=doneCount();let t=`🎾 Падел: сыграно ${d} из ${M.length}\n`;
+  if(d)t+=standings().map(x=>`${x.place}. ${x.n} — ${x.w} поб, ${x.gd>0?"+":""}${x.gd}`).join("\n")+"\n";
+  return t+`\nОткрой ссылку, турнир загрузится у тебя:\n${shareURL()}`}
 function importFromHash(){
-  const m=location.hash.match(/^#s=([0-9._]*)$/);if(!m)return;
-  const parts=m[1].split("_");let n=0;
-  MATCHES.forEach((mt,i)=>{const p=(parts[i]||"").split(".").filter(x=>x!=="").map(Number);
-    if(p.length<2||p.some(v=>!(v>=0&&v<=99)))return;
-    const a=Math.min(5,p[0]),b=Math.min(5,p[1]);
-    const old=S.scores[mt.id];const ta=p.length>=4?String(p[2]):"",tb=p.length>=4?String(p[3]):"";
-    if(!old||old.a!==a||old.b!==b||old.ta!==ta||old.tb!==tb)n++;
-    S.scores[mt.id]={a,b,ta,tb};});
-  save();
+  const mm=location.hash.match(/^#t=([A-Za-z0-9_-]+)$/);if(!mm)return;
   try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}
-  toast(n?`Счёт обновлён: ${n} ${n===1?"матч":n<5?"матча":"матчей"}`:"Новых результатов нет");
-}
+  let d;try{d=JSON.parse(b64d(mm[1]))}catch(e){toast("Ссылка повреждена");return}
+  const okPairs=p=>Array.isArray(p)&&p.length===6&&p.flat().length===12&&new Set(p.flat()).size===12&&p.flat().every(x=>Number.isInteger(x)&&x>=0&&x<12);
+  if(!d||![8,12].includes(d.n)||![5,6].includes(d.g)||!["dec","tb","adv"].includes(d.r)||!Array.isArray(d.nm)||d.nm.length!==d.n||!Array.isArray(d.sc)||(d.n===12&&!okPairs(d.pr))){toast("Ссылка повреждена");return}
+  const names=d.nm.map(x=>String(x).slice(0,18));
+  const same=S.stage==="play"&&S.n===d.n&&S.g===d.g&&S.r===d.r&&JSON.stringify(S.names.slice(0,S.n))===JSON.stringify(names)&&(d.n===8||JSON.stringify(S.pairs)===JSON.stringify(d.pr));
+  if(!same){S=Object.assign(DEF(),{stage:"play",n:d.n,g:d.g,r:d.r,names:names.concat(Array(12-names.length).fill("")),pairs:d.n===12?d.pr:[],tab:"res"})}
+  M=buildMatches();let ch=0;const mx=S.r==="adv"?S.g+1:S.g;
+  d.sc.forEach((v,i)=>{if(!Array.isArray(v)||!M[i])return;const a=Math.max(0,Math.min(mx,v[0]|0)),b=Math.max(0,Math.min(mx,v[1]|0));const o=S.scores[M[i].id];if(!o||o.a!==a||o.b!==b)ch++;S.scores[M[i].id]={a,b}});
+  save();toast(same?(ch?`Счёт обновлён: ${ch} ${ch===1?"матч":ch<5?"матча":"матчей"}`:"Новых результатов нет"):"Турнир загружен из ссылки")}
 function toast(msg){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
-function shareHTML(){
-  return`<div class="share" id="imgBox"><div class="share-h">Картинка с итогами</div>
-  <img id="resImg" alt="Итоги: таблица и шахматка">
-  <div class="share-btns"><button class="btn wa" id="imgShare">Отправить картинку</button></div>
-  <p>Откроется меню «Поделиться» — выберите WhatsApp. Если не открылось: нажмите и удерживайте картинку → «Сохранить» или «Поделиться».</p></div>
-  <div class="share" id="share"><div class="share-h">Ссылка со счётом</div>
-  <p>Отправьте ссылку в чат. У того, кто её откроет, ваши результаты добавятся к его счёту (совпадающие матчи заменятся).</p>
-  <div class="share-btns"><a class="btn wa" id="waLink" href="https://wa.me/?text=${encodeURIComponent(shareText())}" target="_blank" rel="noopener">Отправить в WhatsApp</a>
-  <button class="btn main" id="copyBtn">Скопировать</button></div>
-  <textarea id="shareTxt" readonly aria-label="Текст для отправки">${esc(shareText())}</textarea></div>`;
-}
+function refreshShare(){const w=$("#waLink"),t=$("#shareTxt");if(w)w.href="https://wa.me/?text="+encodeURIComponent(shareText());if(t)t.value=shareText()}
 
-function render(){renderTabs();if(S.tab===5){renderStandings();$("#actions").insertAdjacentHTML("beforebegin",shareHTML());buildImage()}else renderRound(S.tab)}
+/* ---------- results image ---------- */
 let imgBlob=null,imgURL=null,imgJob=0;
 function rrect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function fit(g,text,maxW,weight,size,fam){let s=size;g.font=`${weight} ${s}px ${fam}`;while(s>11&&g.measureText(text).width>maxW){s--;g.font=`${weight} ${s}px ${fam}`}}
 async function buildImage(){
   const job=++imgJob;
-  try{await Promise.all(["700 54px Unbounded","500 22px Unbounded","700 28px Manrope","600 28px Manrope","400 22px Manrope"].map(f=>document.fonts.load(f)))}catch(e){}
-  const T=standings(),done=MATCHES.filter(m=>evalMatch(m.id).state==="done").length;
-  const W=1080,P=48,rowH=74,mRow=68,headH=56,mHead=84;
-  const H=200+36+56+headH+6*rowH+44+56+mHead+6*mRow+110;
+  try{await Promise.all(["700 54px Unbounded","500 22px Unbounded","700 28px Manrope","600 28px Manrope","800 28px Manrope","400 22px Manrope"].map(f=>document.fonts.load(f)))}catch(e){}
+  if(job!==imgJob)return;
+  const tw=S.n===12,T=standings(),d=doneCount(),total=M.length;
+  const W=1080,P=48,cw=W-2*P,headH=56,rowH=tw?74:66;
+  const gHead=tw?84:60,gRow=tw?68:62,gRows=tw?6:8;
+  const H=200+36+56+headH+T.length*rowH+44+56+gHead+gRows*gRow+46+70;
   const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
   const C={bg:"#eef3f1",card:"#ffffff",line:"#d3dfda",fg:"#10221d",mut:"#5b6f69",court:"#1f6b8f",ball:"#d7e84a",win:"#1b7f4e",bad:"#b3261e",self:"#e3ebe8"};
   const FD='"Unbounded", system-ui, sans-serif',FB='"Manrope", system-ui, sans-serif';
@@ -295,88 +351,89 @@ async function buildImage(){
   g.fillStyle=C.ball;g.beginPath();g.arc(W-30,20,140,0,Math.PI*2);g.fill();
   g.strokeStyle="rgba(255,255,255,.55)";g.lineWidth=5;g.beginPath();g.arc(W-30,20,104,Math.PI*.55,Math.PI*1.05);g.stroke();
   g.fillStyle="#fff";g.textAlign="left";g.font=`700 54px ${FD}`;g.fillText("Падел · итоги",P,102);
-  g.globalAlpha=.85;g.font=`600 28px ${FB}`;g.fillText(`17 октября 2026 · ${done===15?"все 15 матчей сыграны":"сыграно "+done+" из 15"}`,P,152);g.globalAlpha=1;
+  const date=new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"}).replace(/\s*г\.?$/,"");
+  g.globalAlpha=.88;fit(g,`${date} · ${tw?"6 пар":"8 игроков"} · ${d===total?`все ${total} матчей сыграны`:`сыграно ${d} из ${total}`}`,W-2*P-130,600,28,FB);g.fillText(`${date} · ${tw?"6 пар":"8 игроков"} · ${d===total?`все ${total} матчей сыграны`:`сыграно ${d} из ${total}`}`,P,152);g.globalAlpha=1;
   let y=236;
   const label=t=>{g.fillStyle=C.mut;g.textAlign="left";g.font=`500 22px ${FD}`;g.fillText(t,P+4,y+32);y+=56};
-  // standings card
+  const card=(h,draw)=>{g.save();rrect(g,P,y,cw,h,24);g.fillStyle=C.card;g.fill();g.clip();draw();g.restore();rrect(g,P,y,cw,h,24);g.strokeStyle=C.line;g.lineWidth=2;g.stroke()};
+  // table
   label("ТАБЛИЦА");
-  const cw=W-2*P,ch=headH+6*rowH;
-  g.save();rrect(g,P,y,cw,ch,24);g.fillStyle=C.card;g.fill();g.clip();
-  const cols=[["#",P+46,"center"],["ПАРА",P+100,"left"],["И",640,"center"],["ПОБ",722,"center"],["ПОР",804,"center"],["ГЕЙМЫ",900,"center"],["±",988,"center"]];
-  g.font=`700 19px ${FB}`;g.fillStyle=C.mut;cols.forEach(([t,x,a])=>{g.textAlign=a;g.fillText(t,x,y+36)});
-  let ry=y+headH;
-  T.forEach((t,k)=>{
-    if(done&&t.place===1){g.fillStyle=C.ball;g.fillRect(P,ry,cw,rowH)}
-    g.fillStyle=C.line;g.fillRect(P,ry,cw,1.5);
-    const mid=ry+rowH/2+10;
-    g.textAlign="center";g.fillStyle=C.fg;g.font=`700 30px ${FD}`;g.fillText(String(t.place),P+46,mid+1);
-    g.textAlign="left";g.font=`700 30px ${FB}`;g.fillText(t.n,P+100,mid);
-    g.textAlign="center";g.font=`600 28px ${FB}`;g.fillStyle=C.fg;
-    g.fillText(String(t.p),640,mid);
-    g.font=`800 30px ${FB}`;g.fillStyle=(done&&t.place===1)?C.fg:C.court;g.fillText(String(t.w),722,mid);
-    g.font=`600 28px ${FB}`;g.fillStyle=C.fg;g.fillText(String(t.l),804,mid);g.fillText(`${t.gw}–${t.gl}`,900,mid);
-    g.font=`700 28px ${FB}`;g.fillStyle=t.gd>0?C.win:t.gd<0?C.bad:C.mut;g.fillText(t.gd>0?"+"+t.gd:String(t.gd),988,mid);
-    ry+=rowH});
-  g.restore();rrect(g,P,y,cw,ch,24);g.strokeStyle=C.line;g.lineWidth=2;g.stroke();
+  const ch=headH+T.length*rowH;
+  card(ch,()=>{
+    const cols=[["#",P+46,"center"],[tw?"ПАРА":"ИГРОК",P+100,"left"],["И",640,"center"],["ПОБ",722,"center"],["ПОР",804,"center"],["ГЕЙМЫ",900,"center"],["±",988,"center"]];
+    g.font=`700 19px ${FB}`;g.fillStyle=C.mut;cols.forEach(([t,x,a])=>{g.textAlign=a;g.fillText(t,x,y+36)});
+    let ry=y+headH;
+    T.forEach(t=>{
+      if(d&&t.place===1){g.fillStyle=C.ball;g.fillRect(P,ry,cw,rowH)}
+      g.fillStyle=C.line;g.fillRect(P,ry,cw,1.5);
+      const mid=ry+rowH/2+10;
+      g.textAlign="center";g.fillStyle=C.fg;g.font=`700 30px ${FD}`;g.fillText(String(t.place),P+46,mid+1);
+      g.textAlign="left";fit(g,t.n,470,700,30,FB);g.fillText(t.n,P+100,mid);
+      g.textAlign="center";g.font=`600 28px ${FB}`;g.fillStyle=C.fg;g.fillText(String(t.p),640,mid);
+      g.font=`800 30px ${FB}`;g.fillStyle=(d&&t.place===1)?C.fg:C.court;g.fillText(String(t.w),722,mid);
+      g.font=`600 28px ${FB}`;g.fillStyle=C.fg;g.fillText(String(t.l),804,mid);g.fillText(`${t.gw}–${t.gl}`,900,mid);
+      g.font=`700 28px ${FB}`;g.fillStyle=t.gd>0?C.win:t.gd<0?C.bad:C.mut;g.fillText(t.gd>0?"+"+t.gd:String(t.gd),988,mid);
+      ry+=rowH})});
   y+=ch+44;
-  // matrix card
-  label("ШАХМАТКА");
-  const nameW=300,cellW=(cw-nameW)/6,mh=mHead+6*mRow;
-  g.save();rrect(g,P,y,cw,mh,24);g.fillStyle=C.card;g.fill();g.clip();
-  PAIRS.forEach((n,j)=>{const [f,s2]=n.split("/"),x=P+nameW+cellW*j+cellW/2;
-    g.textAlign="center";g.fillStyle=C.mut;g.font=`700 19px ${FB}`;g.fillText(f,x,y+38);g.fillText(s2||"",x,y+64)});
-  PAIRS.forEach((n,i)=>{const yy=y+mHead+i*mRow;g.fillStyle=C.line;g.fillRect(P,yy,cw,1.5);
-    g.textAlign="left";g.fillStyle=C.fg;g.font=`700 25px ${FB}`;g.fillText(n,P+24,yy+mRow/2+9);
-    PAIRS.forEach((_,j)=>{const x=P+nameW+cellW*j;
-      if(i===j){g.fillStyle=C.self;g.fillRect(x+1,yy+1.5,cellW-2,mRow-1.5);return}
-      const m=MATCHES.find(q=>(q.a===i&&q.b===j)||(q.a===j&&q.b===i)),r=evalMatch(m.id);
-      g.textAlign="center";
-      if(r.state!=="done"){g.fillStyle=C.line;g.font=`700 26px ${FB}`;g.fillText("—",x+cellW/2,yy+mRow/2+9);return}
-      const sc2=S.scores[m.id],mine=m.a===i?sc2.a:sc2.b,their=m.a===i?sc2.b:sc2.a,won=mine>their;
-      if(won){g.fillStyle="rgba(27,127,78,.10)";g.fillRect(x+1,yy+1.5,cellW-2,mRow-1.5)}
-      g.fillStyle=won?C.win:C.bad;g.font=`${won?800:600} 28px ${FB}`;g.fillText(`${mine}:${their}`,x+cellW/2,yy+mRow/2+10)})});
-  g.fillStyle=C.line;g.fillRect(P+nameW,y,1.5,mh);
-  g.restore();rrect(g,P,y,cw,mh,24);g.strokeStyle=C.line;g.lineWidth=2;g.stroke();
+  // grid
+  label(tw?"ШАХМАТКА":"ПО ТУРАМ");
+  const nameW=tw?300:260,nc=tw?6:7,cellW=(cw-nameW)/nc,mh=gHead+gRows*gRow;
+  const cell=(x,yy,cv)=>{g.textAlign="center";
+    if(!cv){g.fillStyle=C.line;g.font=`700 26px ${FB}`;g.fillText("—",x+cellW/2,yy+gRow/2+9);return}
+    const won=cv.mine>cv.their;if(won){g.fillStyle="rgba(27,127,78,.10)";g.fillRect(x+1,yy+1.5,cellW-2,gRow-1.5)}
+    g.fillStyle=won?C.win:C.bad;g.font=`${won?800:600} 28px ${FB}`;g.fillText(`${cv.mine}:${cv.their}`,x+cellW/2,yy+gRow/2+10)};
+  card(mh,()=>{
+    for(let j=0;j<nc;j++){const x=P+nameW+cellW*j+cellW/2;g.textAlign="center";g.fillStyle=C.mut;
+      if(tw){S.pairs[j].forEach((pl,k)=>{fit(g,nm(pl),cellW-10,700,19,FB);g.fillText(nm(pl),x,y+38+k*26)})}
+      else{g.font=`700 22px ${FB}`;g.fillText(`Т${j+1}`,x,y+38)}}
+    for(let i=0;i<gRows;i++){const yy=y+gHead+i*gRow,n=tw?teamName(i):nm(i);
+      g.fillStyle=C.line;g.fillRect(P,yy,cw,1.5);
+      g.textAlign="left";g.fillStyle=C.fg;fit(g,n,nameW-40,700,25,FB);g.fillText(n,P+24,yy+gRow/2+9);
+      for(let j=0;j<nc;j++){const x=P+nameW+cellW*j;
+        if(tw&&i===j){g.fillStyle=C.self;g.fillRect(x+1,yy+1.5,cellW-2,gRow-1.5);continue}
+        cell(x,yy,tw?cellVs(i,j):cellFor(i,j))}}
+    g.fillStyle=C.line;g.fillRect(P+nameW,y,1.5,mh)});
   y+=mh+46;
-  g.textAlign="left";g.fillStyle=C.mut;g.font=`400 22px ${FB}`;
-  g.fillText("Сет до 5 геймов, при 4:4 решающий гейм. Места: победы → разница геймов",P+4,y);
-  g.fillText("→ выигранные геймы → личная встреча.",P+4,y+32);
-  c.toBlob(b=>{if(job!==imgJob||!b)return;imgBlob=b;if(imgURL)URL.revokeObjectURL(imgURL);imgURL=URL.createObjectURL(b);
-    const im=$("#resImg");if(im)im.src=imgURL},"image/png");
-}
-function refreshShare(){const w=$("#waLink"),t=$("#shareTxt");if(w)w.href="https://wa.me/?text="+encodeURIComponent(shareText());if(t)t.value=shareText()}
+  g.textAlign="left";g.fillStyle=C.mut;
+  fit(g,ruleText(),cw-8,400,22,FB);g.fillText(ruleText(),P+4,y);
+  const rk=`Места: победы → разница геймов → выигранные геймы${tw?" → личная встреча":""}.`;
+  fit(g,rk,cw-8,400,22,FB);g.fillText(rk,P+4,y+32);
+  c.toBlob(b=>{if(job!==imgJob||!b)return;imgBlob=b;if(imgURL)URL.revokeObjectURL(imgURL);imgURL=URL.createObjectURL(b);const im=$("#resImg");if(im)im.src=imgURL},"image/png")}
 
+/* ---------- events ---------- */
 document.addEventListener("click",e=>{
-  const t=e.target.closest("button");if(!t)return;
-  if(t.dataset.tab!==undefined){S.tab=+t.dataset.tab;save();render();window.scrollTo({top:0});return}
-  if(t.dataset.m){const s=sc(t.dataset.m),side=t.dataset.s,d=+t.dataset.d;
-    let v=s[side];v=v===null?(d>0?1:0):Math.min(5,Math.max(0,v+d));
+  const t=e.target.closest("[data-act]");if(!t)return;const a=t.dataset.act;
+  if(a==="set"){const k=t.dataset.k;S[k]=k==="r"?t.dataset.v:+t.dataset.v;save();render();return}
+  if(a==="next"){const er=checkNames();if(er){$("#err").textContent=er;return}
+    if(S.n===12){shufflePairs();SEL=null;S.stage="pairs";save();render();window.scrollTo({top:0})}else startTournament();return}
+  if(a==="reshuffle"){shufflePairs();SEL=null;save();render();return}
+  if(a==="back"){S.stage="setup";SEL=null;save();render();return}
+  if(a==="chip"){const tt=+t.dataset.t,k=+t.dataset.k;
+    if(!SEL)SEL={t:tt,k};else if(SEL.t===tt&&SEL.k===k)SEL=null;
+    else{const x=S.pairs[SEL.t][SEL.k];S.pairs[SEL.t][SEL.k]=S.pairs[tt][k];S.pairs[tt][k]=x;SEL=null;save()}
+    renderPairs();return}
+  if(a==="start"){startTournament();return}
+  if(a==="tab"){S.tab=t.dataset.tab==="res"?"res":+t.dataset.tab;save();render();window.scrollTo({top:0});return}
+  if(a==="step"){const id=t.dataset.m,side=t.dataset.s,dd=+t.dataset.d;
+    const s=S.scores[id]||(S.scores[id]={a:null,b:null});
+    let v=s[side];v=v===null?(dd>0?1:0):Math.min(MAXG(),Math.max(0,v+dd));
     s[side]=v;const o=side==="a"?"b":"a";if(s[o]===null)s[o]=0;
-    if(!(Math.max(s.a,s.b)===6&&Math.min(s.a,s.b)===5)){s.ta="";s.tb=""}
-    save();renderTabs();const m=MATCHES.find(x=>x.id===t.dataset.m);
-    const el=document.getElementById("c-"+m.id);el.outerHTML=cardHTML(m);
-    const again=document.querySelector(`.step[data-m="${m.id}"][data-s="${side}"][data-d="${d}"]`);again&&again.focus({preventScroll:true});refreshShare();return}
-  if(t.id==="imgShare"){if(!imgBlob){toast("Картинка ещё готовится");return}
+    save();renderHeader();const m=M.find(x=>x.id===id);
+    document.getElementById("c-"+id).outerHTML=cardHTML(m);
+    const again=document.querySelector(`.step[data-m="${id}"][data-s="${side}"][data-d="${dd}"]`);again&&again.focus({preventScroll:true});return}
+  if(a==="clear"){delete S.scores[t.dataset.m];save();render();return}
+  if(a==="imgShare"){if(!imgBlob){toast("Картинка ещё готовится");return}
     const f=new File([imgBlob],"padel-itogi.png",{type:"image/png"});
-    try{if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(()=>{});return}}catch(e){}
+    try{if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(()=>{});return}}catch(er){}
     toast("Нажмите и удерживайте картинку, чтобы сохранить");return}
-  if(t.id==="copyBtn"){const txt=shareText(),ta=$("#shareTxt");
-    const fallback=()=>{ta.focus();ta.select();toast("Текст выделен, скопируйте его")};
-    try{navigator.clipboard.writeText(txt).then(()=>toast("Скопировано"),fallback)}catch(e){fallback()}return}
-  if(t.dataset.clear){delete S.scores[t.dataset.clear];save();render();return}
-  if(t.id==="resetAll"){$("#actions").innerHTML=`<div class="confirm">Стереть все результаты? <button class="btn danger" id="resetYes">Да, стереть</button><button class="btn" id="resetNo">Отмена</button></div>`;return}
-  if(t.id==="resetYes"){S.scores={};save();render();return}
-  if(t.id==="resetNo"){render();return}
+  if(a==="copy"){const txt=shareText(),ta=$("#shareTxt");
+    const fb=()=>{ta.focus();ta.select();toast("Текст выделен, скопируйте его")};
+    try{navigator.clipboard.writeText(txt).then(()=>toast("Скопировано"),fb)}catch(er){fb()}return}
+  if(a==="newAsk"){$("#actions").innerHTML=`Начать новый турнир? Счёт этого турнира удалится. <button class="btn danger" data-act="newYes">Да, новый</button><button class="btn" data-act="newNo">Отмена</button>`;return}
+  if(a==="newYes"){S.stage="setup";S.scores={};S.tab=0;M=[];save();render();window.scrollTo({top:0});return}
+  if(a==="newNo"){render();return}
 });
-document.addEventListener("input",e=>{
-  const i=e.target;if(!i.dataset.t)return;
-  i.value=i.value.replace(/\D/g,"").slice(0,2);
-  sc(i.dataset.m)[i.dataset.t]=i.value;save();renderTabs();
-  const card=document.getElementById("c-"+i.dataset.m),r=evalMatch(i.dataset.m);
-  card.querySelector(".card-h .badge").outerHTML=badge(r);
-  card.querySelector(".msg").textContent=r.state==="bad"?r.msg:"";
-  refreshShare();
-});
+document.addEventListener("input",e=>{const i=e.target;if(i.dataset.i===undefined)return;S.names[+i.dataset.i]=i.value;save();const er=$("#err");if(er)er.textContent=""});
 window.addEventListener("hashchange",()=>{importFromHash();render()});
 importFromHash();
 render();
